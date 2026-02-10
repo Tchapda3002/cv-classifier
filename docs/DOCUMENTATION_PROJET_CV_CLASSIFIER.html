@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Classifier - Documentation Technique Complete</title>
+    <style>
+        body {
+            font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+            color: #333;
+            background: white;
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 3px solid #2c5aa0;
+            padding-bottom: 10px;
+            font-size: 28pt;
+            text-align: center;
+        }
+        h2 {
+            color: #2c5aa0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 30px;
+            font-size: 18pt;
+            page-break-after: avoid;
+        }
+        h3 {
+            color: #4a5568;
+            margin-top: 20px;
+            font-size: 14pt;
+        }
+        h4 {
+            color: #718096;
+            font-size: 12pt;
+        }
+        .header-info {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #e2e8f0;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 10pt;
+        }
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+        }
+        .example-box {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background: #fef3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info-box {
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .schema {
+            font-family: 'Consolas', monospace;
+            background: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin: 15px 0;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.3;
+        }
+        .toc {
+            background: #f7fafc;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #2c5aa0;
+            text-decoration: none;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            pre {
+                white-space: pre-wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>CV Classifier</h1>
+<h2 style="text-align: center; border: none; color: #4a5568;">Documentation Technique Complete</h2>
+
+<div class="header-info">
+    <p><strong>Version</strong>: 2.2.0 | <strong>Date</strong>: Fevrier 2026</p>
+    <p>Guide Complet du Systeme de Classification Automatique de CV</p>
+</div>
+
+<div class="toc">
+    <h3>Table des Matieres</h3>
+    <ul>
+        <li><a href="#intro">1. Introduction et Vue d'Ensemble</a></li>
+        <li><a href="#architecture">2. Architecture du Systeme</a></li>
+        <li><a href="#preprocessing">3. Preprocessing du Texte - Comment le CV est Nettoye</a></li>
+        <li><a href="#tfidf">4. Extraction de Caracteristiques - TF-IDF</a></li>
+        <li><a href="#classification">5. Classification - Le Modele de Machine Learning</a></li>
+        <li><a href="#confiance">6. Calcul de la Confiance</a></li>
+        <li><a href="#skills">7. Extraction des Competences</a></li>
+        <li><a href="#chatbot">8. Le Chatbot IA</a></li>
+        <li><a href="#limites">9. Limites et Considerations</a></li>
+        <li><a href="#glossaire">10. Glossaire</a></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="intro">1. Introduction et Vue d'Ensemble</h2>
+
+<h3>Qu'est-ce que CV Classifier ?</h3>
+
+<p>CV Classifier est un systeme intelligent qui analyse automatiquement le contenu d'un CV (Curriculum Vitae) et determine la categorie professionnelle la plus appropriee pour le candidat. Par exemple, si vous uploadez un CV contenant des competences en Python, Machine Learning et Data Analysis, le systeme le classifiera probablement dans la categorie "Data Scientist".</p>
+
+<h3>Comment ca fonctionne en resume ?</h3>
+
+<div class="schema">
+CV (texte brut) --> Nettoyage --> Vectorisation --> Classification --> Categorie + Confiance
+</div>
+
+<div class="info-box">
+<strong>Etapes simplifiees :</strong>
+<ol>
+    <li>Le systeme recoit le texte du CV</li>
+    <li>Il nettoie le texte (supprime emails, URLs, ponctuations, etc.)</li>
+    <li>Il transforme le texte en nombres (vecteurs)</li>
+    <li>Le modele ML analyse ces nombres</li>
+    <li>Il renvoie une categorie avec un pourcentage de confiance</li>
+</ol>
+</div>
+
+<h2 id="architecture">2. Architecture du Systeme</h2>
+
+<h3>Schema Global</h3>
+
+<div class="schema">
++------------------+     +-------------------+     +------------------+
+|   FRONTEND       |     |      API          |     |    MODELES ML    |
+|   (HTML/JS)      | --> |   (FastAPI)       | --> |  (Scikit-learn)  |
++------------------+     +-------------------+     +------------------+
+                               |
+                    +----------+----------+
+                    |          |          |
+              +-----v----+ +---v---+ +----v-----+
+              | Text     | | Skills| | Chatbot  |
+              | Cleaner  | | Detect| | (HF API) |
+              +----------+ +-------+ +----------+
+</div>
+
+<h3>Composants Principaux</h3>
+
+<table>
+    <tr>
+        <th>Composant</th>
+        <th>Role</th>
+        <th>Fichier</th>
+    </tr>
+    <tr>
+        <td>API REST</td>
+        <td>Point d'entree des requetes</td>
+        <td><code>api/main.py</code></td>
+    </tr>
+    <tr>
+        <td>Text Cleaner</td>
+        <td>Nettoyage du texte</td>
+        <td><code>src/preprocessing/text_cleaner.py</code></td>
+    </tr>
+    <tr>
+        <td>Pipeline ML</td>
+        <td>Classification</td>
+        <td><code>models/cv_classifier_pipeline.pkl</code></td>
+    </tr>
+    <tr>
+        <td>Skills Detector</td>
+        <td>Detection competences</td>
+        <td><code>src/skills_extraction/skills_detector.py</code></td>
+    </tr>
+    <tr>
+        <td>Chatbot</td>
+        <td>Questions en langage naturel</td>
+        <td><code>src/chatbot/cv_chatbot.py</code></td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="preprocessing">3. Preprocessing du Texte</h2>
+
+<h3>Pourquoi nettoyer le texte ?</h3>
+
+<p>Un CV contient beaucoup d'informations "bruitees" qui n'aident pas le modele a comprendre le profil du candidat :</p>
+<ul>
+    <li>Emails (john.doe@email.com)</li>
+    <li>Numeros de telephone (+33 6 12 34 56 78)</li>
+    <li>URLs (https://linkedin.com/in/johndoe)</li>
+    <li>Dates et chiffres non pertinents</li>
+</ul>
+
+<h3>Les 12 Etapes de Nettoyage</h3>
+
+<h4>Etape 1 : Conversion en Minuscules</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Senior SOFTWARE Engineer"<br>
+<strong>APRES :</strong> "senior software engineer"<br>
+<em>Pourquoi ?</em> Pour que "Python" et "python" soient reconnus comme le meme mot.
+</div>
+
+<h4>Etape 2 : Suppression des URLs</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Mon portfolio: https://monsite.com/portfolio"<br>
+<strong>APRES :</strong> "Mon portfolio: "<br>
+<em>Pourquoi ?</em> Les URLs n'apportent pas d'information sur les competences.
+</div>
+
+<h4>Etape 3 : Suppression des Emails</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Contactez-moi: jean.dupont@gmail.com"<br>
+<strong>APRES :</strong> "Contactez-moi: "
+</div>
+
+<h4>Etape 4 : Suppression des Numeros de Telephone</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Tel: +33 6 12 34 56 78"<br>
+<strong>APRES :</strong> "Tel: "
+</div>
+
+<h4>Etape 5 : Suppression des Nombres (optionnel)</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "5 ans d'experience en 2023"<br>
+<strong>APRES :</strong> "ans d'experience en"<br>
+<em>Note :</em> Cette option est configurable car parfois les annees d'experience sont importantes.
+</div>
+
+<h4>Etape 6 : Suppression de la Ponctuation</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Python, Java, C++!"<br>
+<strong>APRES :</strong> "Python Java C"
+</div>
+
+<h4>Etape 7 : Normalisation des Espaces</h4>
+<div class="example-box">
+<strong>AVANT :</strong> "Python&nbsp;&nbsp;&nbsp;&nbsp;Java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C"<br>
+<strong>APRES :</strong> "Python Java C"
+</div>
+
+<h4>Etape 8 : Tokenisation</h4>
+<p>Le texte est decoupe en mots individuels (tokens) :</p>
+<div class="example-box">
+<strong>AVANT :</strong> "Python Java C"<br>
+<strong>APRES :</strong> ["Python", "Java", "C"]
+</div>
+
+<h4>Etape 9 : Suppression des Stopwords</h4>
+<p>Les mots communs sans valeur semantique sont retires :</p>
+<div class="example-box">
+<strong>AVANT :</strong> ["the", "developer", "is", "working", "on", "python"]<br>
+<strong>APRES :</strong> ["developer", "working", "python"]<br>
+<em>Stopwords supprimes :</em> "the", "is", "on", "a", "an", "and", "or", etc.
+</div>
+
+<h4>Etape 10 : Suppression des Tokens Courts</h4>
+<p>Les mots de moins de 3 caracteres sont retires :</p>
+<div class="example-box">
+<strong>AVANT :</strong> ["a", "developer", "in", "it"]<br>
+<strong>APRES :</strong> ["developer"]
+</div>
+
+<h4>Etape 11 : Lemmatisation</h4>
+<p>Les mots sont reduits a leur forme de base :</p>
+<div class="example-box">
+<strong>AVANT :</strong> ["developing", "developed", "developer"]<br>
+<strong>APRES :</strong> ["develop", "develop", "developer"]<br>
+<em>Explication :</em> "working" devient "work", "machines" devient "machine".
+</div>
+
+<h4>Etape 12 : Reconstruction</h4>
+<div class="example-box">
+<strong>AVANT :</strong> ["python", "machine", "learning", "developer"]<br>
+<strong>APRES :</strong> "python machine learning developer"
+</div>
+
+<h3>Exemple Complet de Nettoyage</h3>
+
+<p><strong>TEXTE ORIGINAL :</strong></p>
+<pre><code>John Doe
+Email: john.doe@example.com | Phone: +1-555-123-4567
+Website: https://johndoe.com
+
+PROFESSIONAL SUMMARY
+Experienced Software Developer with 5+ years in Python, JavaScript,
+and cloud technologies. Strong background in machine learning!!!
+
+SKILLS: Python, JavaScript, React, Docker, AWS, SQL, MongoDB</code></pre>
+
+<p><strong>TEXTE NETTOYE :</strong></p>
+<pre><code>professional summary experienced software developer year python
+javascript cloud technology strong background machine learning
+skill python javascript react docker aws sql mongodb</code></pre>
+
+<div class="info-box">
+<strong>Reduction :</strong> De 350 caracteres a 180 caracteres (reduction de 48%)
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="tfidf">4. Extraction de Caracteristiques - TF-IDF</h2>
+
+<h3>Le Probleme : Les Ordinateurs ne Comprennent pas les Mots</h3>
+
+<p>Un modele de machine learning ne peut pas traiter directement du texte. Il ne comprend que les nombres. Nous devons donc transformer le texte en representation numerique.</p>
+
+<h3>Qu'est-ce que TF-IDF ?</h3>
+
+<p><strong>TF-IDF</strong> = <em>Term Frequency - Inverse Document Frequency</em></p>
+
+<p>C'est une methode mathematique pour mesurer l'importance de chaque mot dans un document par rapport a une collection de documents.</p>
+
+<h4>TF (Term Frequency) - Frequence du Terme</h4>
+
+<div class="example-box">
+<strong>Formule :</strong><br>
+TF = Nombre de fois que le mot apparait dans le CV / Nombre total de mots dans le CV<br><br>
+<strong>Exemple :</strong><br>
+Si "python" apparait 5 fois dans un CV de 100 mots :<br>
+TF("python") = 5/100 = <strong>0.05</strong>
+</div>
+
+<h4>IDF (Inverse Document Frequency)</h4>
+
+<div class="example-box">
+<strong>Formule :</strong><br>
+IDF = log(Nombre total de CVs / Nombre de CVs contenant ce mot)<br><br>
+<strong>Exemple :</strong><br>
+Sur 1000 CVs, 100 contiennent le mot "python" :<br>
+IDF("python") = log(1000/100) = log(10) = <strong>2.3</strong>
+</div>
+
+<div class="info-box">
+<strong>Intuition :</strong>
+<ul>
+    <li>Si un mot apparait dans TOUS les CVs (comme "experience"), son IDF sera <strong>faible</strong> (peu distinctif)</li>
+    <li>Si un mot apparait dans PEU de CVs (comme "kubernetes"), son IDF sera <strong>eleve</strong> (tres distinctif)</li>
+</ul>
+</div>
+
+<h4>TF-IDF Final</h4>
+
+<div class="example-box">
+<strong>Formule :</strong> TF-IDF = TF x IDF<br><br>
+<strong>Exemple pour "python" :</strong><br>
+TF = 0.05, IDF = 2.3<br>
+TF-IDF = 0.05 x 2.3 = <strong>0.115</strong>
+</div>
+
+<h3>Configuration Utilisee</h3>
+
+<pre><code>TfidfVectorizer(
+    max_features=5000,    # Garde les 5000 mots les plus importants
+    ngram_range=(1, 2),   # Considere les mots seuls ET les paires
+    min_df=2,             # Ignore les mots dans moins de 2 CVs
+    max_df=0.95           # Ignore les mots dans plus de 95% des CVs
+)</code></pre>
+
+<h4>Explication des N-grams</h4>
+
+<p>Avec <code>ngram_range=(1, 2)</code>, le systeme considere :</p>
+<ul>
+    <li><strong>Unigrams</strong> (1 mot) : "machine", "learning"</li>
+    <li><strong>Bigrams</strong> (2 mots) : "machine learning"</li>
+</ul>
+<p><em>Pourquoi ?</em> Car "machine learning" a plus de sens que "machine" et "learning" separement.</p>
+
+<h3>Resultat : Le Vecteur</h3>
+
+<p>Apres TF-IDF, chaque CV devient un vecteur de 5000 dimensions :</p>
+<pre><code>CV1 = [0.0, 0.12, 0.0, 0.08, 0.0, ..., 0.15]  # 5000 valeurs
+CV2 = [0.05, 0.0, 0.11, 0.0, 0.09, ..., 0.0]  # 5000 valeurs</code></pre>
+
+<p>Chaque position correspond a un mot, et la valeur represente son importance TF-IDF.</p>
+
+<div class="page-break"></div>
+
+<h2 id="classification">5. Classification - Le Modele de Machine Learning</h2>
+
+<h3>Quel Modele est Utilise ?</h3>
+
+<p>Le systeme utilise un <strong>Random Forest Classifier</strong> (Foret Aleatoire).</p>
+
+<h3>Comment Fonctionne Random Forest ?</h3>
+
+<h4>Analogie Simple : Le Conseil des Experts</h4>
+
+<p>Imaginez que vous demandez a 100 experts de voter pour determiner la profession d'un candidat :</p>
+<ol>
+    <li>Chaque expert (arbre) regarde le CV differemment</li>
+    <li>Chaque expert donne son vote (sa prediction)</li>
+    <li>La categorie avec le plus de votes gagne</li>
+</ol>
+
+<h4>Fonctionnement Technique</h4>
+
+<ol>
+    <li><strong>Creation de multiples arbres de decision</strong>
+        <ul>
+            <li>100 arbres sont crees (parametre n_estimators)</li>
+            <li>Chaque arbre est entraine sur un sous-ensemble aleatoire des donnees</li>
+        </ul>
+    </li>
+    <li><strong>Echantillonnage Bootstrap</strong>
+        <ul>
+            <li>Chaque arbre utilise environ 63% des donnees (tirage avec remise)</li>
+            <li>Les 37% restants servent a evaluer l'arbre</li>
+        </ul>
+    </li>
+    <li><strong>Selection aleatoire des caracteristiques</strong>
+        <ul>
+            <li>A chaque noeud, seul un sous-ensemble de mots est considere</li>
+            <li>Cela evite que tous les arbres se ressemblent</li>
+        </ul>
+    </li>
+    <li><strong>Vote majoritaire</strong>
+        <ul>
+            <li>Chaque arbre vote pour une categorie</li>
+            <li>La categorie majoritaire est selectionnee</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>Exemple de Decision d'un Arbre</h4>
+
+<div class="schema">
+                     [CV du candidat]
+                           |
+                 contient "python" ?
+                    /            \
+                  OUI            NON
+                   |              |
+          contient "tensorflow" ?  contient "java" ?
+              /        \              /        \
+            OUI        NON          OUI        NON
+             |          |            |          |
+        Data Scientist  ...    Software Eng    ...
+</div>
+
+<h3>Les 25 Categories</h3>
+
+<table>
+    <tr><th>#</th><th>Categorie</th><th>#</th><th>Categorie</th></tr>
+    <tr><td>1</td><td>Advocate</td><td>14</td><td>Hadoop</td></tr>
+    <tr><td>2</td><td>Arts</td><td>15</td><td>Health and Fitness</td></tr>
+    <tr><td>3</td><td>Automation Testing</td><td>16</td><td>Java Developer</td></tr>
+    <tr><td>4</td><td>Blockchain</td><td>17</td><td>Mechanical Engineer</td></tr>
+    <tr><td>5</td><td>Business Analyst</td><td>18</td><td>Network Security Engineer</td></tr>
+    <tr><td>6</td><td>Civil Engineer</td><td>19</td><td>Operations Manager</td></tr>
+    <tr><td>7</td><td>Data Science</td><td>20</td><td>PMO</td></tr>
+    <tr><td>8</td><td>Database</td><td>21</td><td>Python Developer</td></tr>
+    <tr><td>9</td><td>DevOps Engineer</td><td>22</td><td>SAP Developer</td></tr>
+    <tr><td>10</td><td>DotNet Developer</td><td>23</td><td>Sales</td></tr>
+    <tr><td>11</td><td>ETL Developer</td><td>24</td><td>Testing</td></tr>
+    <tr><td>12</td><td>Electrical Engineering</td><td>25</td><td>Web Designing</td></tr>
+    <tr><td>13</td><td>HR</td><td></td><td></td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="confiance">6. Calcul de la Confiance</h2>
+
+<h3>Comment le Systeme Calcule-t-il la Confiance ?</h3>
+
+<p>La confiance n'est pas une estimation subjective mais un <strong>calcul mathematique</strong> base sur les votes des arbres.</p>
+
+<h4>Methode : predict_proba()</h4>
+
+<pre><code>probabilities = pipeline.predict_proba([cv_text])[0]
+confidence = probabilities.max()</code></pre>
+
+<h4>Explication Detaillee</h4>
+
+<p><strong>1. Chaque arbre vote pour une categorie :</strong></p>
+<ul>
+    <li>Arbre 1 vote "Data Scientist"</li>
+    <li>Arbre 2 vote "Data Scientist"</li>
+    <li>Arbre 3 vote "Python Developer"</li>
+    <li>... (100 arbres au total)</li>
+</ul>
+
+<p><strong>2. Calcul des probabilites :</strong></p>
+<div class="example-box">
+P("Data Scientist") = 75 arbres / 100 arbres = <strong>0.75 (75%)</strong><br>
+P("Python Developer") = 20 arbres / 100 arbres = <strong>0.20 (20%)</strong><br>
+P("Software Engineer") = 5 arbres / 100 arbres = <strong>0.05 (5%)</strong>
+</div>
+
+<p><strong>3. La confiance = probabilite maximale :</strong></p>
+<div class="example-box">
+Confiance = max(0.75, 0.20, 0.05) = <strong>0.75 = 75%</strong>
+</div>
+
+<h3>Interpretation des Niveaux de Confiance</h3>
+
+<table>
+    <tr>
+        <th>Confiance</th>
+        <th>Interpretation</th>
+        <th>Recommandation</th>
+    </tr>
+    <tr>
+        <td><strong>&gt; 90%</strong></td>
+        <td>Tres haute</td>
+        <td style="color: green;">Fiable</td>
+    </tr>
+    <tr>
+        <td><strong>70-90%</strong></td>
+        <td>Haute</td>
+        <td style="color: #2e7d32;">Probablement correct</td>
+    </tr>
+    <tr>
+        <td><strong>50-70%</strong></td>
+        <td>Moyenne</td>
+        <td style="color: orange;">Verification recommandee</td>
+    </tr>
+    <tr>
+        <td><strong>&lt; 50%</strong></td>
+        <td>Basse</td>
+        <td style="color: red;">CV ambigu, plusieurs profils possibles</td>
+    </tr>
+</table>
+
+<h3>Exemple de Reponse Complete</h3>
+
+<pre><code>{
+    "category": "Data Scientist",
+    "confidence": 0.87,
+    "all_probabilities": {
+        "Data Scientist": 0.87,
+        "Python Developer": 0.08,
+        "Machine Learning Engineer": 0.03,
+        "Software Engineer": 0.02
+    }
+}</code></pre>
+
+<div class="page-break"></div>
+
+<h2 id="skills">7. Extraction des Competences</h2>
+
+<h3>Comment les Competences sont-elles Detectees ?</h3>
+
+<p>Le systeme utilise une <strong>detection par correspondance de motifs</strong> (Pattern Matching) avec une base de donnees de competences.</p>
+
+<h3>La Base de Competences</h3>
+
+<h4>1. Competences Techniques (par domaine)</h4>
+
+<table>
+    <tr>
+        <th>Domaine</th>
+        <th>Competences</th>
+    </tr>
+    <tr>
+        <td>Machine Learning</td>
+        <td>machine learning, deep learning, neural networks, nlp, computer vision, tensorflow, pytorch</td>
+    </tr>
+    <tr>
+        <td>Data Science</td>
+        <td>data science, data analysis, statistics, data visualization, regression, clustering</td>
+    </tr>
+    <tr>
+        <td>Programming</td>
+        <td>python, java, javascript, c++, sql</td>
+    </tr>
+    <tr>
+        <td>Cloud</td>
+        <td>aws, azure, gcp, ec2, s3, lambda</td>
+    </tr>
+</table>
+
+<h4>2. Soft Skills</h4>
+<p>communication, teamwork, leadership, problem solving, critical thinking, creativity</p>
+
+<h4>3. Frameworks</h4>
+<p>tensorflow, pytorch, scikit-learn, react, angular, vue, django, flask, fastapi</p>
+
+<h3>Algorithme de Detection</h3>
+
+<h4>Etape 1 : Recherche de Motifs (Pattern Matching)</h4>
+
+<pre><code>def _find_skill(self, skill: str, text: str) -> bool:
+    # Utilise les expressions regulieres avec word boundaries
+    pattern = r'\b' + re.escape(skill) + r'\b'
+    return bool(re.search(pattern, text, re.IGNORECASE))</code></pre>
+
+<div class="info-box">
+<strong>Word Boundaries (\b) :</strong> Evite les faux positifs
+<ul>
+    <li>"java" ne matchera PAS "javascript"</li>
+    <li>"python" ne matchera PAS "pythonic"</li>
+</ul>
+</div>
+
+<h4>Etape 2 : Calcul du Score de Confiance</h4>
+
+<p>La confiance de chaque competence est calculee sur deux criteres :</p>
+
+<p><strong>A. Score de Frequence (70% du poids) :</strong></p>
+<div class="example-box">
+<code>frequency_score = min(count * 0.2, 1.0)</code><br><br>
+<strong>Exemple :</strong><br>
+- "python" apparait 3 fois --> score = min(3 x 0.2, 1.0) = <strong>0.6</strong><br>
+- "python" apparait 5 fois --> score = min(5 x 0.2, 1.0) = <strong>1.0</strong>
+</div>
+
+<p><strong>B. Score de Contexte (30% du poids) :</strong></p>
+<p>Le systeme verifie si la competence apparait pres de mots-cles contextuels :</p>
+<ul>
+    <li>Si "python" apparait dans "Strong Python skills" --> bonus +0.1</li>
+    <li>Si "python" apparait dans "Technologies: Python, Java" --> bonus +0.1</li>
+</ul>
+
+<p><strong>C. Score Final :</strong></p>
+<pre><code>final_score = (frequency_score * 0.7) + (context_score * 0.3)</code></pre>
+
+<div class="page-break"></div>
+
+<h2 id="chatbot">8. Le Chatbot IA</h2>
+
+<h3>Fonctionnement General</h3>
+
+<p>Le chatbot permet de poser des questions en langage naturel sur un CV analyse.</p>
+
+<h3>Architecture</h3>
+
+<div class="schema">
+Question Utilisateur --> API Chatbot --> HuggingFace API --> Reponse
+                              |
+                         CV en contexte
+</div>
+
+<h3>Le Modele Utilise</h3>
+
+<table>
+    <tr>
+        <th>Propriete</th>
+        <th>Valeur</th>
+    </tr>
+    <tr>
+        <td>Modele</td>
+        <td>meta-llama/Llama-3.2-3B-Instruct</td>
+    </tr>
+    <tr>
+        <td>Parametres</td>
+        <td>3 milliards</td>
+    </tr>
+    <tr>
+        <td>Type</td>
+        <td>Instruction-tuned (optimise pour suivre des instructions)</td>
+    </tr>
+    <tr>
+        <td>API</td>
+        <td>HuggingFace Inference (gratuit)</td>
+    </tr>
+</table>
+
+<h3>Comment ca Marche ?</h3>
+
+<h4>1. Construction du Prompt</h4>
+
+<pre><code>messages = [
+    {
+        "role": "system",
+        "content": """Tu es un assistant specialise dans l'analyse de CV.
+                     Tu dois repondre UNIQUEMENT sur le CV fourni.
+                     Sois concis et precis. Reponds en francais."""
+    },
+    {
+        "role": "user",
+        "content": f"Voici le CV a analyser:\n\n{cv_text[:3000]}\n\n---"
+    },
+    {
+        "role": "user",
+        "content": question  # La question de l'utilisateur
+    }
+]</code></pre>
+
+<h4>2. Appel a l'API</h4>
+
+<pre><code>response = client.chat.completions.create(
+    model="meta-llama/Llama-3.2-3B-Instruct",
+    messages=messages,
+    max_tokens=500,
+    temperature=0.7
+)</code></pre>
+
+<h4>3. Gestion de l'Historique</h4>
+
+<p>Le chatbot garde en memoire les 3 derniers echanges pour maintenir le contexte de la conversation.</p>
+
+<h3>Fallback : SimpleCVChatbot</h3>
+
+<p>Si l'API HuggingFace n'est pas disponible, un chatbot simple prend le relais en utilisant des patterns predefinies au lieu de l'IA.</p>
+
+<div class="page-break"></div>
+
+<h2 id="limites">9. Limites et Considerations</h2>
+
+<h3>9.1 Limites du Modele de Classification</h3>
+
+<div class="warning-box">
+<h4>A. Dependance aux Donnees d'Entrainement</h4>
+<p><strong>Probleme :</strong> Le modele a ete entraine sur 962 CVs. Ses predictions sont limitees a ce qu'il a "vu".</p>
+<p><strong>Consequences :</strong></p>
+<ul>
+    <li>Metiers emergents (ex: "Prompt Engineer") non reconnus</li>
+    <li>Profils atypiques mal classes</li>
+    <li>Biais vers les profils surrepresentes dans les donnees</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<h4>B. Sensibilite au Vocabulaire</h4>
+<p><strong>Probleme :</strong> Le modele TF-IDF ne comprend pas les synonymes.</p>
+<p><strong>Exemple :</strong></p>
+<ul>
+    <li>"ML Engineer" et "Machine Learning Engineer" sont traites differemment</li>
+    <li>"Dev" vs "Developer" peuvent donner des resultats differents</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<h4>C. Pas de Comprehension Semantique</h4>
+<p><strong>Probleme :</strong> Le modele ne "comprend" pas vraiment le sens du texte.</p>
+<p><strong>Exemple :</strong></p>
+<ul>
+    <li>"Je ne connais PAS Python" peut etre interprete comme une competence Python</li>
+    <li>Le contexte negatif n'est pas pris en compte</li>
+</ul>
+</div>
+
+<h3>9.2 Limites de l'Extraction de Competences</h3>
+
+<div class="warning-box">
+<h4>A. Detection par Mots-Cles</h4>
+<ul>
+    <li>"TensorFlow" trouve, mais "TF" non reconnu</li>
+    <li>Fautes d'orthographe non gerees ("Pytohn" au lieu de "Python")</li>
+    <li>Abreviations non standard ignorees</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<h4>B. Faux Positifs Possibles</h4>
+<ul>
+    <li>"I worked with Java developers" --> "Java" detecte mais le candidat n'est pas developpeur Java</li>
+    <li>"Managed a team using Agile" --> "Agile" detecte mais niveau reel inconnu</li>
+</ul>
+</div>
+
+<h3>9.3 Limites du Chatbot</h3>
+
+<div class="warning-box">
+<h4>Hallucinations Possibles</h4>
+<p>Le modele LLM peut "inventer" des informations non presentes dans le CV.</p>
+</div>
+
+<h3>9.4 Metriques de Performance</h3>
+
+<table>
+    <tr>
+        <th>Metrique</th>
+        <th>Valeur</th>
+    </tr>
+    <tr>
+        <td>Accuracy</td>
+        <td>100%</td>
+    </tr>
+    <tr>
+        <td>F1-Score (macro)</td>
+        <td>98.96%</td>
+    </tr>
+    <tr>
+        <td>Precision</td>
+        <td>99.2%</td>
+    </tr>
+    <tr>
+        <td>Recall</td>
+        <td>98.8%</td>
+    </tr>
+</table>
+
+<div class="warning-box">
+<strong>Avertissement Important :</strong> Ces metriques tres elevees peuvent indiquer un sur-apprentissage (overfitting). Les performances reelles sur des CVs "dans la nature" seront probablement inferieures.
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="glossaire">10. Glossaire</h2>
+
+<table>
+    <tr>
+        <th>Terme</th>
+        <th>Definition Simple</th>
+    </tr>
+    <tr>
+        <td><strong>API</strong></td>
+        <td>Interface permettant a des programmes de communiquer entre eux</td>
+    </tr>
+    <tr>
+        <td><strong>Classification</strong></td>
+        <td>Tache consistant a attribuer une categorie a un element</td>
+    </tr>
+    <tr>
+        <td><strong>Confiance</strong></td>
+        <td>Probabilite que la prediction soit correcte (entre 0 et 1)</td>
+    </tr>
+    <tr>
+        <td><strong>Data Leakage</strong></td>
+        <td>Fuite de donnees : quand des infos du test sont utilisees pendant l'entrainement</td>
+    </tr>
+    <tr>
+        <td><strong>F1-Score</strong></td>
+        <td>Mesure combinant precision et rappel (moyenne harmonique)</td>
+    </tr>
+    <tr>
+        <td><strong>FastAPI</strong></td>
+        <td>Framework Python pour creer des APIs web</td>
+    </tr>
+    <tr>
+        <td><strong>HuggingFace</strong></td>
+        <td>Plateforme de modeles de Machine Learning</td>
+    </tr>
+    <tr>
+        <td><strong>Lemmatisation</strong></td>
+        <td>Reduire un mot a sa forme de base ("working" --> "work")</td>
+    </tr>
+    <tr>
+        <td><strong>LLM</strong></td>
+        <td>Large Language Model - Grand modele de langage (GPT, Llama, etc.)</td>
+    </tr>
+    <tr>
+        <td><strong>Machine Learning</strong></td>
+        <td>Apprentissage automatique par les donnees</td>
+    </tr>
+    <tr>
+        <td><strong>N-gram</strong></td>
+        <td>Sequence de N mots consecutifs</td>
+    </tr>
+    <tr>
+        <td><strong>NLP</strong></td>
+        <td>Natural Language Processing - Traitement du langage naturel</td>
+    </tr>
+    <tr>
+        <td><strong>Overfitting</strong></td>
+        <td>Sur-apprentissage : le modele memorise au lieu de generaliser</td>
+    </tr>
+    <tr>
+        <td><strong>Pipeline</strong></td>
+        <td>Enchainement automatique d'etapes de traitement</td>
+    </tr>
+    <tr>
+        <td><strong>Random Forest</strong></td>
+        <td>Algorithme ML utilisant plusieurs arbres de decision</td>
+    </tr>
+    <tr>
+        <td><strong>Regex</strong></td>
+        <td>Expression reguliere : motif de recherche de texte</td>
+    </tr>
+    <tr>
+        <td><strong>Stopwords</strong></td>
+        <td>Mots vides (le, la, de, et) sans valeur semantique</td>
+    </tr>
+    <tr>
+        <td><strong>TF-IDF</strong></td>
+        <td>Methode de ponderation des mots par frequence et rarete</td>
+    </tr>
+    <tr>
+        <td><strong>Token</strong></td>
+        <td>Unite de texte (mot ou sous-mot)</td>
+    </tr>
+    <tr>
+        <td><strong>Vectorisation</strong></td>
+        <td>Transformation du texte en nombres</td>
+    </tr>
+</table>
+
+<hr>
+
+<h2>Conclusion</h2>
+
+<p>CV Classifier est un systeme complet qui combine :</p>
+<ul>
+    <li><strong>Pre-traitement NLP</strong> pour nettoyer les textes</li>
+    <li><strong>TF-IDF</strong> pour transformer le texte en vecteurs</li>
+    <li><strong>Random Forest</strong> pour classifier les CVs</li>
+    <li><strong>Pattern Matching</strong> pour extraire les competences</li>
+    <li><strong>LLM via API</strong> pour le chatbot conversationnel</li>
+</ul>
+
+<p>Bien que les performances soient excellentes sur les donnees de test, il est important de garder en tete les limites inherentes a tout systeme de Machine Learning : dependance aux donnees d'entrainement, pas de comprehension semantique profonde, et necessite de mise a jour reguliere.</p>
+
+<hr>
+
+<p style="text-align: center; color: #666;">
+<strong>Document genere le :</strong> Fevrier 2026<br>
+<strong>Version du systeme :</strong> 2.2.0
+</p>
+
+</body>
+</html>
