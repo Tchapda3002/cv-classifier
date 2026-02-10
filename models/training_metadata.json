@@ -1,0 +1,38 @@
+{
+  "classifier": "random_forest",
+  "training_time_seconds": 2.582636833190918,
+  "trained_at": "2026-02-10T08:15:51.349668",
+  "n_classes": 25,
+  "classes": [
+    "Advocate",
+    "Arts",
+    "Automation Testing",
+    "Blockchain",
+    "Business Analyst",
+    "Civil Engineer",
+    "Data Science",
+    "Database",
+    "DevOps Engineer",
+    "DotNet Developer",
+    "ETL Developer",
+    "Electrical Engineering",
+    "HR",
+    "Hadoop",
+    "Health and fitness",
+    "Java Developer",
+    "Mechanical Engineer",
+    "Network Security Engineer",
+    "Operations Manager",
+    "PMO",
+    "Python Developer",
+    "SAP Developer",
+    "Sales",
+    "Testing",
+    "Web Designing"
+  ],
+  "pipeline_steps": [
+    "text_cleaner",
+    "tfidf",
+    "classifier"
+  ]
+}

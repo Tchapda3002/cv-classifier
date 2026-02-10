@@ -1,0 +1,38 @@
+# FastAPI et serveur
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Machine Learning
+scikit-learn
+numpy
+pandas
+
+# NLP et Text Processing
+nltk
+
+# Extraction PDF
+pdfplumber==0.11.9
+pypdf==6.6.2
+pytesseract==0.3.13
+pdf2image==1.17.0
+
+# Extraction Word
+python-docx==1.1.0
+
+# MLflow
+mlflow
+
+# Data Visualization
+matplotlib
+seaborn
+
+# Utilities
+python-dotenv
+tqdm
+
+# Database
+openpyxl
+
+# API Documentation
+pydantic

@@ -1,0 +1,68 @@
+name: Test & Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-prod.txt
+          pip install pytest httpx
+
+      - name: Test API imports
+        run: |
+          python -c "from api.main import app; print('API imports OK')"
+
+      - name: Test model loading
+        run: |
+          python -c "
+          import joblib
+          p = joblib.load('models/cv_classifier_pipeline.pkl')
+          l = joblib.load('models/label_encoder.pkl')
+          print('Models load OK')
+          print('Categories:', len(l.classes_))
+          "
+
+      - name: Test prediction
+        run: |
+          python -c "
+          import joblib
+          p = joblib.load('models/cv_classifier_pipeline.pkl')
+          l = joblib.load('models/label_encoder.pkl')
+          pred = p.predict(['Software engineer with Python experience'])[0]
+          label = l.inverse_transform([pred])[0]
+          print('Prediction OK:', label)
+          "
+
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/cv-classifier
+            git pull origin main
+            sudo systemctl restart cv-classifier
+            echo "Deployment completed at $(date)"

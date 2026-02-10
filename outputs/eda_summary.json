@@ -1,0 +1,9 @@
+{
+  "total_cv": 962,
+  "n_categories": 25,
+  "avg_length_chars": 3160.364864864865,
+  "avg_length_words": 450.49792099792097,
+  "most_common_category": "Java Developer",
+  "least_common_category": "Advocate",
+  "class_imbalance_ratio": 4.2
+}
