@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 """
-Main training script for CV Classifier with proper data leakage prevention.
+Main training script for CV Classifier with anti data-leakage.
 
-This script:
-1. Loads raw data
-2. Splits into train/test BEFORE any preprocessing
-3. Runs cross-validation on training data only
-4. Trains final model on all training data
-5. Evaluates once on held-out test set
-6. Saves the pipeline and all artifacts
+Features:
+- Duplicate handling (split on unique texts, reinject safe duplicates)
+- NLP Data Augmentation (synonym replacement, deletion, swap, insertion)
+- Cross-validation on training data only
+- Final evaluation on held-out test set
 
 Usage:
     python scripts/train_pipeline.py
     python scripts/train_pipeline.py --classifier random_forest
-    python scripts/train_pipeline.py --skip-cv  # Skip cross-validation
+    python scripts/train_pipeline.py --no-augmentation
+    python scripts/train_pipeline.py --optimize
 """
 
 import argparse
@@ -26,75 +25,78 @@ sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / 'src'))
 
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import LabelEncoder
 
-from src.training import (
-    DataSplitter,
-    CVClassifierPipelineBuilder,
-    CVClassifierTrainer,
-    PipelineEvaluator
-)
+from src.training.trainer import CVClassifierTrainer
+from src.training.evaluator import PipelineEvaluator
+from src.training.pipeline_builder import CVClassifierPipelineBuilder
 
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description='Train CV Classifier with proper data handling'
+        description='Train the CV Classifier pipeline'
     )
+
     parser.add_argument(
-        '--data-path',
-        type=str,
+        '--data', type=str,
         default='data/raw/resume_dataset.csv',
-        help='Path to raw dataset CSV'
+        help='Path to the raw dataset CSV'
     )
+
     parser.add_argument(
-        '--output-dir',
-        type=str,
-        default='models',
-        help='Directory to save trained models'
-    )
-    parser.add_argument(
-        '--split-dir',
-        type=str,
-        default='data/splits',
-        help='Directory to save/load data split indices'
-    )
-    parser.add_argument(
-        '--classifier',
-        type=str,
+        '--classifier', type=str,
         default='random_forest',
         choices=CVClassifierPipelineBuilder.list_available_classifiers(),
         help='Classifier to use'
     )
+
     parser.add_argument(
-        '--test-size',
-        type=float,
-        default=0.2,
-        help='Proportion of data for test set'
+        '--no-augmentation', action='store_true',
+        help='Disable data augmentation'
     )
+
     parser.add_argument(
-        '--n-folds',
-        type=int,
-        default=5,
+        '--no-duplicates', action='store_true',
+        help='Disable duplicate handling (not recommended)'
+    )
+
+    parser.add_argument(
+        '--optimize', action='store_true',
+        help='Run hyperparameter optimization with GridSearchCV'
+    )
+
+    parser.add_argument(
+        '--folds', type=int, default=5,
         help='Number of cross-validation folds'
     )
+
     parser.add_argument(
-        '--skip-cv',
-        action='store_true',
-        help='Skip cross-validation (faster but less informative)'
+        '--output', type=str,
+        default='models',
+        help='Output directory for models'
     )
+
     parser.add_argument(
-        '--force-new-split',
-        action='store_true',
-        help='Force creating a new train/test split even if one exists'
+        '--splits', type=str,
+        default='data/splits',
+        help='Directory for train/test split indices'
     )
+
     parser.add_argument(
-        '--random-state',
-        type=int,
-        default=42,
+        '--fresh-split', action='store_true',
+        help='Force a new train/test split even if one exists'
+    )
+
+    parser.add_argument(
+        '--skip-cv', action='store_true',
+        help='Skip cross-validation (faster)'
+    )
+
+    parser.add_argument(
+        '--random-state', type=int, default=42,
         help='Random seed for reproducibility'
     )
+
     return parser.parse_args()
 
 
@@ -102,29 +104,28 @@ def main():
     """Main training function."""
     args = parse_args()
 
-    print("=" * 70)
-    print(" CV CLASSIFIER TRAINING - ANTI DATA LEAKAGE PIPELINE")
-    print("=" * 70)
-
     # Resolve paths
-    data_path = PROJECT_ROOT / args.data_path
-    output_dir = PROJECT_ROOT / args.output_dir
-    split_dir = PROJECT_ROOT / args.split_dir
+    data_path = PROJECT_ROOT / args.data
+    output_dir = PROJECT_ROOT / args.output
+    splits_dir = PROJECT_ROOT / args.splits
 
-    print(f"\nConfiguration:")
-    print(f"  Data path:   {data_path}")
-    print(f"  Output dir:  {output_dir}")
-    print(f"  Split dir:   {split_dir}")
-    print(f"  Classifier:  {args.classifier}")
-    print(f"  Test size:   {args.test_size}")
-    print(f"  CV folds:    {args.n_folds}")
-    print(f"  Random state: {args.random_state}")
+    print("=" * 70)
+    print(" CV CLASSIFIER - TRAINING PIPELINE")
+    print("=" * 70)
+    print(f"\n Configuration:")
+    print(f"   Data: {data_path}")
+    print(f"   Classifier: {args.classifier}")
+    print(f"   Augmentation: {not args.no_augmentation}")
+    print(f"   Duplicate handling: {not args.no_duplicates}")
+    print(f"   Optimization: {args.optimize}")
+    print(f"   CV Folds: {args.folds}")
+    print(f"   Output: {output_dir}")
 
     # =========================================================================
-    # STEP 1: Load raw data
+    # STEP 1: Load data
     # =========================================================================
     print("\n" + "=" * 70)
-    print(" STEP 1: Loading raw data")
+    print(" STEP 1: LOADING DATA")
     print("=" * 70)
 
     if not data_path.exists():
@@ -132,122 +133,80 @@ def main():
         sys.exit(1)
 
     df = pd.read_csv(data_path)
-    print(f"Loaded {len(df)} samples")
-    print(f"Columns: {list(df.columns)}")
-
-    # Identify text and target columns
-    text_column = 'Resume'
-    target_column = 'Category'
-
-    if text_column not in df.columns:
-        print(f"ERROR: Text column '{text_column}' not found")
-        sys.exit(1)
-    if target_column not in df.columns:
-        print(f"ERROR: Target column '{target_column}' not found")
-        sys.exit(1)
-
-    print(f"\nTarget distribution:")
-    print(df[target_column].value_counts())
+    print(f"\n   Loaded {len(df)} samples")
+    print(f"   Columns: {list(df.columns)}")
+    print(f"   Categories: {df['Category'].nunique()}")
 
     # =========================================================================
-    # STEP 2: Split RAW data (before any preprocessing!)
+    # STEP 2: Initialize trainer
     # =========================================================================
-    print("\n" + "=" * 70)
-    print(" STEP 2: Splitting raw data (BEFORE preprocessing)")
-    print("=" * 70)
-
-    splitter = DataSplitter(
-        test_size=args.test_size,
-        random_state=args.random_state,
-        stratify=True
-    )
-
-    if splitter.split_exists(split_dir) and not args.force_new_split:
-        print("Using existing split...")
-        train_df, test_df = splitter.load_split(df, split_dir)
-    else:
-        print("Creating new split...")
-        train_df, test_df = splitter.split_and_save(df, target_column, split_dir)
-
-    # Extract features and labels
-    X_train = train_df[text_column].values
-    y_train = train_df[target_column].values
-    X_test = test_df[text_column].values
-    y_test = test_df[target_column].values
-
-    print(f"\nTrain set: {len(X_train)} samples")
-    print(f"Test set:  {len(X_test)} samples")
-
-    # =========================================================================
-    # STEP 3: Encode labels
-    # =========================================================================
-    print("\n" + "=" * 70)
-    print(" STEP 3: Encoding labels")
-    print("=" * 70)
-
-    label_encoder = LabelEncoder()
-    y_train_encoded = label_encoder.fit_transform(y_train)
-    y_test_encoded = label_encoder.transform(y_test)
-
-    print(f"Number of classes: {len(label_encoder.classes_)}")
-    print(f"Classes: {list(label_encoder.classes_)}")
-
-    # =========================================================================
-    # STEP 4: Cross-validation (on training data ONLY)
-    # =========================================================================
-    print("\n" + "=" * 70)
-    print(" STEP 4: Cross-validation (training data only)")
-    print("=" * 70)
-
     trainer = CVClassifierTrainer(
         classifier_name=args.classifier,
-        n_folds=args.n_folds,
-        random_state=args.random_state
+        n_folds=args.folds,
+        random_state=args.random_state,
+        use_augmentation=not args.no_augmentation,
+        augmentation_strategy='balance'
     )
 
+    # =========================================================================
+    # STEP 3: Handle fresh split
+    # =========================================================================
+    if args.fresh_split and splits_dir.exists():
+        import shutil
+        shutil.rmtree(splits_dir)
+        print(f"\n   Removed existing split: {splits_dir}")
+
+    # =========================================================================
+    # STEP 4: Prepare data (split + augmentation)
+    # =========================================================================
+    X_train, X_test, y_train, y_test = trainer.prepare_data(
+        df=df,
+        text_column='Resume',
+        target_column='Category',
+        split_dir=splits_dir,
+        handle_duplicates=not args.no_duplicates
+    )
+
+    # =========================================================================
+    # STEP 5: Cross-validation
+    # =========================================================================
     if not args.skip_cv:
-        cv_results = trainer.cross_validate(X_train, y_train_encoded)
+        cv_results = trainer.cross_validate(X_train, y_train)
     else:
-        print("Cross-validation skipped (--skip-cv flag)")
+        print("\n   Cross-validation skipped (--skip-cv)")
         cv_results = None
 
     # =========================================================================
-    # STEP 5: Train final model on all training data
+    # STEP 6: Training (with or without optimization)
     # =========================================================================
-    print("\n" + "=" * 70)
-    print(" STEP 5: Training final model")
-    print("=" * 70)
-
-    pipeline = trainer.train(X_train, y_train_encoded, label_encoder)
+    if args.optimize:
+        pipeline, best_params = trainer.optimize(X_train, y_train)
+    else:
+        pipeline = trainer.train(X_train, y_train)
 
     # =========================================================================
-    # STEP 6: Evaluate on held-out test set (ONCE!)
+    # STEP 7: Evaluation on test set
     # =========================================================================
-    print("\n" + "=" * 70)
-    print(" STEP 6: Final evaluation on test set")
-    print("=" * 70)
+    evaluator = PipelineEvaluator(trainer.pipeline, trainer.label_encoder)
+    test_results = evaluator.evaluate(X_test, y_test)
 
-    evaluator = PipelineEvaluator(pipeline, label_encoder)
-    test_results = evaluator.evaluate(X_test, y_test_encoded)
-
-    # Compare with CV if available
+    # Compare CV vs Test
     comparison = None
     if cv_results is not None:
         comparison = evaluator.compare_with_cv(cv_results)
 
     # =========================================================================
-    # STEP 7: Save everything
+    # STEP 8: Save everything
     # =========================================================================
     print("\n" + "=" * 70)
-    print(" STEP 7: Saving models and reports")
+    print(" SAVING ARTIFACTS")
     print("=" * 70)
 
-    # Save pipeline and training artifacts
-    trainer.label_encoder = label_encoder
-    saved_files = trainer.save(output_dir, save_cv_results=(cv_results is not None))
+    saved_files = trainer.save(output_dir)
 
     # Save evaluation report
-    evaluator.save_report(output_dir, comparison)
+    reports_dir = output_dir / 'reports'
+    evaluator.save_report(reports_dir, comparison)
 
     # =========================================================================
     # SUMMARY
@@ -256,23 +215,42 @@ def main():
     print(" TRAINING COMPLETE")
     print("=" * 70)
 
-    print(f"\nFinal Test Metrics:")
-    print(f"  Accuracy:  {test_results['metrics']['accuracy']:.4f}")
-    print(f"  F1 Macro:  {test_results['metrics']['f1_macro']:.4f}")
-    print(f"  Precision: {test_results['metrics']['precision_macro']:.4f}")
-    print(f"  Recall:    {test_results['metrics']['recall_macro']:.4f}")
+    print(f"\n Summary:")
+    print(f"   Classifier: {args.classifier}")
+    print(f"   Train samples: {len(X_train)}")
+    print(f"   Test samples: {len(X_test)}")
 
     if cv_results:
-        print(f"\nCV vs Test Comparison:")
-        print(f"  CV Accuracy:   {cv_results['scores']['accuracy']['cv_mean']:.4f}")
-        print(f"  Test Accuracy: {test_results['metrics']['accuracy']:.4f}")
+        print(f"   CV F1-Score: {cv_results['scores']['f1_macro']['cv_mean']:.4f}")
 
-    print(f"\nSaved files:")
+    print(f"   Test F1-Score: {test_results['metrics']['f1_macro']:.4f}")
+    print(f"   Test Accuracy: {test_results['metrics']['accuracy']:.4f}")
+
+    # Stats from trainer
+    if trainer.full_stats.get('split'):
+        split_stats = trainer.full_stats['split']
+        if 'split' in split_stats:
+            s = split_stats['split']
+            if s.get('duplicates_handled'):
+                print(f"\n   Duplicate handling:")
+                print(f"     Safe duplicates added to train: {s.get('safe_duplicates_added', 0)}")
+                print(f"     Unsafe duplicates discarded: {s.get('unsafe_duplicates_discarded', 0)}")
+
+    if trainer.full_stats.get('augmentation'):
+        aug_stats = trainer.full_stats['augmentation']
+        print(f"\n   Augmentation:")
+        print(f"     Original samples: {aug_stats.get('original_samples', 0)}")
+        print(f"     Augmented samples: {aug_stats.get('augmented_samples', 0)}")
+        print(f"     Final samples: {aug_stats.get('final_samples', 0)}")
+
+    print(f"\n Saved files:")
     for name, path in saved_files.items():
-        print(f"  - {name}: {path}")
+        print(f"   - {name}: {path}")
 
     print("\n Pipeline ready for production use!")
     print(f"   Load with: joblib.load('{output_dir}/cv_classifier_pipeline.pkl')")
+
+    print("\n" + "=" * 70)
 
     return 0
 

@@ -1,7 +1,7 @@
 {
   "classifier": "random_forest",
-  "training_time_seconds": 2.582636833190918,
-  "trained_at": "2026-02-10T08:15:51.349668",
+  "training_time_seconds": 58.38228988647461,
+  "trained_at": "2026-02-10T23:45:39.425492",
   "n_classes": 25,
   "classes": [
     "Advocate",
@@ -34,5 +34,22 @@
     "text_cleaner",
     "tfidf",
     "classifier"
-  ]
+  ],
+  "use_augmentation": true,
+  "augmentation_strategy": "balance",
+  "full_stats": {
+    "split": {},
+    "augmentation": {
+      "original_samples": 770,
+      "augmented_samples": 92,
+      "final_samples": 862,
+      "target_per_class": 30,
+      "techniques_used": {
+        "synonym": 19,
+        "delete": 27,
+        "swap": 21,
+        "insert": 25
+      }
+    }
+  }
 }

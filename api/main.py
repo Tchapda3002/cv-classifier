@@ -708,6 +708,7 @@ def get_model_info():
         pipeline_steps = [name for name, _ in PIPELINE.steps]
         classifier = PIPELINE.named_steps.get('classifier')
         tfidf = PIPELINE.named_steps.get('tfidf')
+        text_cleaner = PIPELINE.named_steps.get('text_cleaner')
 
         # Extraire les métriques des fichiers chargés
         cv_scores = CV_RESULTS.get('scores', {})
@@ -719,10 +720,79 @@ def get_model_info():
         train_samples = CV_RESULTS.get('n_samples') or split_meta.get('train_samples')
         test_samples = test_eval.get('n_samples') or split_meta.get('test_samples')
 
+        # Extraire les stats d'augmentation et de doublons
+        full_stats = TRAINING_METADATA.get('full_stats', {})
+        augmentation_stats = full_stats.get('augmentation', {})
+        split_stats = full_stats.get('split', {})
+
+        # Infos sur les doublons
+        duplicate_info = None
+        if split_stats:
+            dup_analysis = split_stats.get('duplicate_analysis', {})
+            split_info = split_stats.get('split', {})
+            if dup_analysis or split_info:
+                duplicate_info = {
+                    "total_rows": dup_analysis.get('total_rows'),
+                    "unique_texts": dup_analysis.get('unique_texts'),
+                    "duplicates_found": dup_analysis.get('rows_with_duplicates'),
+                    "safe_duplicates_added": split_info.get('safe_duplicates_added'),
+                    "unsafe_duplicates_discarded": split_info.get('unsafe_duplicates_discarded'),
+                    "duplicates_handled": split_info.get('duplicates_handled', False)
+                }
+
+        # Infos sur l'augmentation
+        augmentation_info = None
+        if augmentation_stats:
+            augmentation_info = {
+                "enabled": True,
+                "original_samples": augmentation_stats.get('original_samples'),
+                "augmented_samples": augmentation_stats.get('augmented_samples'),
+                "final_samples": augmentation_stats.get('final_samples'),
+                "target_per_class": augmentation_stats.get('target_per_class'),
+                "techniques_used": augmentation_stats.get('techniques_used', {})
+            }
+
+        # Infos sur les transformations de texte
+        text_transformations = {
+            "steps": [
+                {"name": "Lowercase", "description": "Conversion en minuscules"},
+                {"name": "Remove URLs", "description": "Suppression des URLs (http, www)"},
+                {"name": "Remove Emails", "description": "Suppression des adresses email"},
+                {"name": "Remove Phone Numbers", "description": "Suppression des numéros de téléphone"},
+                {"name": "Remove Punctuation", "description": "Suppression de la ponctuation"},
+                {"name": "Tokenization", "description": "Découpage en tokens (mots)"},
+                {"name": "Remove Stopwords", "description": "Suppression des mots vides (the, is, at...)"},
+                {"name": "Lemmatization", "description": "Réduction des mots à leur forme de base"}
+            ],
+            "vectorization": {
+                "method": "TF-IDF",
+                "max_features": tfidf.max_features if tfidf and hasattr(tfidf, 'max_features') else 5000,
+                "ngram_range": list(tfidf.ngram_range) if tfidf and hasattr(tfidf, 'ngram_range') else [1, 2],
+                "min_df": getattr(tfidf, 'min_df', 2) if tfidf else 2,
+                "max_df": getattr(tfidf, 'max_df', 0.95) if tfidf else 0.95,
+                "sublinear_tf": getattr(tfidf, 'sublinear_tf', True) if tfidf else True
+            }
+        }
+
+        # Infos sur le classifieur
+        classifier_info = {
+            "type": type(classifier).__name__ if classifier else "Unknown",
+            "name": TRAINING_METADATA.get('classifier', 'random_forest')
+        }
+
+        # Ajouter les hyperparamètres du classifieur si disponibles
+        if classifier:
+            if hasattr(classifier, 'n_estimators'):
+                classifier_info["n_estimators"] = classifier.n_estimators
+            if hasattr(classifier, 'max_depth'):
+                classifier_info["max_depth"] = classifier.max_depth
+            if hasattr(classifier, 'min_samples_split'):
+                classifier_info["min_samples_split"] = classifier.min_samples_split
+
         return {
             "mode": "pipeline",
             "model_type": type(classifier).__name__ if classifier else "Unknown",
-            "classifier": TRAINING_METADATA.get('classifier', 'unknown'),
+            "classifier": classifier_info,
             "pipeline_steps": pipeline_steps,
             "trained_at": TRAINING_METADATA.get('trained_at'),
             "training_time_seconds": TRAINING_METADATA.get('training_time_seconds'),
@@ -733,6 +803,9 @@ def get_model_info():
                 "test_size": split_meta.get('test_size'),
                 "random_state": split_meta.get('random_state')
             },
+            "duplicate_handling": duplicate_info,
+            "augmentation": augmentation_info,
+            "transformations": text_transformations,
             "n_features": tfidf.max_features if tfidf and hasattr(tfidf, 'max_features') else None,
             "n_categories": TRAINING_METADATA.get('n_classes') or (len(LABEL_ENCODER.classes_) if LABEL_ENCODER else None),
             "categories": TRAINING_METADATA.get('classes') or (LABEL_ENCODER.classes_.tolist() if LABEL_ENCODER else None),

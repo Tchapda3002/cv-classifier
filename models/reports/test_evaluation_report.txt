@@ -1,0 +1,59 @@
+============================================================
+ CV CLASSIFIER - TEST SET EVALUATION
+============================================================
+
+Evaluated at: 2026-02-10T23:45:39.330241
+Test samples: 34
+Number of classes: 25
+
+OVERALL METRICS
+----------------------------------------
+  accuracy: 0.8529
+  precision_macro: 0.8100
+  recall_macro: 0.8400
+  f1_macro: 0.8076
+  precision_weighted: 0.8309
+  recall_weighted: 0.8529
+  f1_weighted: 0.8207
+
+
+CLASSIFICATION REPORT
+----------------------------------------
+                           precision    recall  f1-score   support
+
+                 Advocate       1.00      1.00      1.00         2
+                     Arts       1.00      1.00      1.00         1
+       Automation Testing       1.00      1.00      1.00         1
+               Blockchain       1.00      1.00      1.00         1
+         Business Analyst       0.50      1.00      0.67         1
+           Civil Engineer       1.00      1.00      1.00         1
+             Data Science       1.00      1.00      1.00         2
+                 Database       1.00      1.00      1.00         2
+          DevOps Engineer       0.00      0.00      0.00         1
+         DotNet Developer       1.00      0.50      0.67         2
+            ETL Developer       1.00      1.00      1.00         1
+   Electrical Engineering       1.00      1.00      1.00         1
+                       HR       0.50      1.00      0.67         2
+                   Hadoop       1.00      1.00      1.00         2
+       Health and fitness       1.00      1.00      1.00         1
+           Java Developer       0.75      1.00      0.86         3
+      Mechanical Engineer       1.00      1.00      1.00         1
+Network Security Engineer       1.00      1.00      1.00         1
+       Operations Manager       1.00      1.00      1.00         1
+                      PMO       0.00      0.00      0.00         1
+         Python Developer       1.00      1.00      1.00         1
+            SAP Developer       1.00      1.00      1.00         1
+                    Sales       0.50      1.00      0.67         1
+                  Testing       1.00      0.50      0.67         2
+            Web Designing       0.00      0.00      0.00         1
+
+                 accuracy                           0.85        34
+                macro avg       0.81      0.84      0.81        34
+             weighted avg       0.83      0.85      0.82        34
+
+
+CV vs TEST COMPARISON
+----------------------------------------
+  CV Accuracy:   0.9965
+  Test Accuracy: 0.8529
+  Difference:    +0.1436
