@@ -725,11 +725,85 @@
             display: block;
         }
 
-        /* Model Info Tab Styles */
+        /* Model Info Tab Styles - Professional Dashboard */
+        .model-info-container {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+            padding: var(--space-lg) 0;
+        }
+
+        /* Hero Performance Section */
+        .performance-hero {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--accent-gold);
+            border-radius: 16px;
+            padding: var(--space-xl);
+            text-align: center;
+        }
+
+        .performance-hero-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: var(--space-lg);
+        }
+
+        .performance-hero-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: var(--space-xl);
+        }
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+        }
+
+        @media (max-width: 768px) {
+            .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .hero-metric {
+            padding: var(--space-lg);
+            background: rgba(212, 168, 83, 0.08);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .hero-metric-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            line-height: 1;
+        }
+
+        .hero-metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: var(--space-sm);
+        }
+
+        /* Info Grid */
         .model-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: var(--space-lg);
+        }
+
+        @media (max-width: 1024px) {
+            .model-info-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .model-info-grid { grid-template-columns: 1fr; }
         }
 
         .info-card {
@@ -737,6 +811,24 @@
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
             overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .info-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .info-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-card.span-2 {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 640px) {
+            .info-card.span-2 { grid-column: 1; }
         }
 
         .info-card-header {
@@ -784,28 +876,81 @@
             font-size: 1.1rem;
         }
 
-        .transformation-step {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-md);
-            padding: var(--space-sm) 0;
-            border-bottom: 1px solid var(--border-subtle);
+        /* Pipeline Visual */
+        .pipeline-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: var(--space-xl);
         }
 
-        .transformation-step:last-child {
-            border-bottom: none;
+        .pipeline-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent-gold);
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .pipeline-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step-box {
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .pipeline-step-box.active {
+            border-color: var(--accent-gold);
+            background: rgba(212, 168, 83, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .pipeline-arrow {
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            font-weight: 300;
+        }
+
+        /* Transformations */
+        .transformations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .transformation-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
 
         .step-number {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             background: var(--accent-gold);
             color: var(--bg-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
             flex-shrink: 0;
         }
@@ -816,65 +961,53 @@
 
         .step-name {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-primary);
         }
 
         .step-description {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             margin-top: 2px;
         }
 
+        /* Tags */
         .tag-container {
             display: flex;
             flex-wrap: wrap;
             gap: var(--space-xs);
-            margin-top: var(--space-sm);
         }
 
         .tag {
-            padding: 3px 10px;
+            padding: 4px 12px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-medium);
-            border-radius: 15px;
-            font-size: 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
         }
 
         .tag.gold {
             border-color: var(--accent-gold);
             color: var(--accent-gold);
+            background: rgba(212, 168, 83, 0.1);
         }
 
-        .pipeline-visual {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-sm);
-            padding: var(--space-lg);
-            flex-wrap: wrap;
-        }
-
-        .pipeline-step-box {
-            padding: var(--space-sm) var(--space-md);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-medium);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .pipeline-arrow {
-            color: var(--accent-gold);
-            font-size: 1.2rem;
-        }
-
-        .metric-grid {
+        /* TF-IDF Metrics */
+        .tfidf-metrics {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: var(--space-md);
+        }
+
+        @media (max-width: 640px) {
+            .tfidf-metrics { grid-template-columns: repeat(2, 1fr); }
         }
 
         .metric-item {
@@ -886,7 +1019,7 @@
 
         .metric-value {
             font-family: var(--font-display);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--accent-gold);
         }
@@ -901,6 +1034,16 @@
         .metric-std {
             font-size: 0.7rem;
             color: var(--text-muted);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         /* Chat Section */
@@ -1171,236 +1314,228 @@
 
         <!-- Tab: Model Info -->
         <div class="tab-content" id="tab-model-info">
-            <div class="model-info-grid" style="grid-column: 1 / -1;">
-                <!-- Pipeline Overview -->
-                <div class="info-card" style="grid-column: 1 / -1;">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                        </svg>
-                        Pipeline de Classification
-                    </div>
-                    <div class="info-card-body">
-                        <div class="pipeline-visual" id="pipelineVisual">
-                            <div class="pipeline-step-box">Texte Brut</div>
-                            <span class="pipeline-arrow">→</span>
-                            <div class="pipeline-step-box">Nettoyage</div>
-                            <span class="pipeline-arrow">→</span>
-                            <div class="pipeline-step-box">TF-IDF</div>
-                            <span class="pipeline-arrow">→</span>
-                            <div class="pipeline-step-box">Classifieur</div>
-                            <span class="pipeline-arrow">→</span>
-                            <div class="pipeline-step-box">Catégorie</div>
+            <div class="model-info-container">
+
+                <!-- Hero: Performance Metrics (Test Set) -->
+                <div class="performance-hero">
+                    <div class="performance-hero-title">Performances du Modèle</div>
+                    <div class="performance-hero-subtitle">Métriques évaluées sur le jeu de test (données jamais vues pendant l'entraînement)</div>
+                    <div class="hero-metrics">
+                        <div class="hero-metric">
+                            <div class="hero-metric-value" id="infoAccuracy">--</div>
+                            <div class="hero-metric-label">Accuracy</div>
+                        </div>
+                        <div class="hero-metric">
+                            <div class="hero-metric-value" id="infoF1">--</div>
+                            <div class="hero-metric-label">F1-Score</div>
+                        </div>
+                        <div class="hero-metric">
+                            <div class="hero-metric-value" id="infoPrecision">--</div>
+                            <div class="hero-metric-label">Precision</div>
+                        </div>
+                        <div class="hero-metric">
+                            <div class="hero-metric-value" id="infoRecall">--</div>
+                            <div class="hero-metric-label">Recall</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Model Info -->
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                        Modèle Retenu
-                    </div>
-                    <div class="info-card-body">
-                        <div class="info-row">
-                            <span class="info-label">Type</span>
-                            <span class="info-value" id="infoModelType">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Estimateurs</span>
-                            <span class="info-value" id="infoEstimators">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Max Depth</span>
-                            <span class="info-value" id="infoMaxDepth">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Entraîné le</span>
-                            <span class="info-value" id="infoTrainedAt">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Temps d'entraînement</span>
-                            <span class="info-value" id="infoTrainingTime">--</span>
-                        </div>
+                <!-- Pipeline Visual -->
+                <div class="pipeline-section">
+                    <div class="pipeline-title">Pipeline de Classification</div>
+                    <div class="pipeline-visual">
+                        <div class="pipeline-step-box">CV Texte</div>
+                        <span class="pipeline-arrow">→</span>
+                        <div class="pipeline-step-box active">Nettoyage NLP</div>
+                        <span class="pipeline-arrow">→</span>
+                        <div class="pipeline-step-box active">TF-IDF</div>
+                        <span class="pipeline-arrow">→</span>
+                        <div class="pipeline-step-box active">Random Forest</div>
+                        <span class="pipeline-arrow">→</span>
+                        <div class="pipeline-step-box">Catégorie</div>
                     </div>
                 </div>
 
-                <!-- Performance Metrics -->
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
-                        Performances (Test Set)
-                    </div>
-                    <div class="info-card-body">
-                        <div class="metric-grid">
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoAccuracy">--</div>
-                                <div class="metric-label">Accuracy</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoF1">--</div>
-                                <div class="metric-label">F1-Score</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoPrecision">--</div>
-                                <div class="metric-label">Precision</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoRecall">--</div>
-                                <div class="metric-label">Recall</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Info Cards Grid -->
+                <div class="model-info-grid">
 
-                <!-- Data Info -->
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                        </svg>
-                        Données
-                    </div>
-                    <div class="info-card-body">
-                        <div class="info-row">
-                            <span class="info-label">Train samples</span>
-                            <span class="info-value" id="infoTrainSamples">--</span>
+                    <!-- Model Info -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                            Modèle
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">Test samples</span>
-                            <span class="info-value" id="infoTestSamples">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Catégories</span>
-                            <span class="info-value" id="infoCategories">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Features TF-IDF</span>
-                            <span class="info-value" id="infoFeatures">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Duplicate Handling -->
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        Gestion des Doublons
-                    </div>
-                    <div class="info-card-body">
-                        <div class="info-row">
-                            <span class="info-label">CV uniques</span>
-                            <span class="info-value" id="infoUniqueTexts">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Doublons détectés</span>
-                            <span class="info-value" id="infoDuplicatesFound">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Safe duplicates (train)</span>
-                            <span class="info-value" id="infoSafeDuplicates">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Discarded (test leak)</span>
-                            <span class="info-value" id="infoUnsafeDuplicates">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Data Augmentation -->
-                <div class="info-card">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M12 2v20M2 12h20"/>
-                        </svg>
-                        Data Augmentation
-                    </div>
-                    <div class="info-card-body">
-                        <div class="info-row">
-                            <span class="info-label">Samples originaux</span>
-                            <span class="info-value" id="infoOriginalSamples">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Samples augmentés</span>
-                            <span class="info-value" id="infoAugmentedSamples">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Total final</span>
-                            <span class="info-value highlight" id="infoFinalSamples">--</span>
-                        </div>
-                        <div class="tag-container" id="augmentationTechniques"></div>
-                    </div>
-                </div>
-
-                <!-- Text Transformations -->
-                <div class="info-card" style="grid-column: 1 / -1;">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                        </svg>
-                        Transformations du Texte
-                    </div>
-                    <div class="info-card-body">
-                        <div id="transformationSteps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg);">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TF-IDF Configuration -->
-                <div class="info-card" style="grid-column: 1 / -1;">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M12 20V10"/>
-                            <path d="M18 20V4"/>
-                            <path d="M6 20v-4"/>
-                        </svg>
-                        Vectorisation TF-IDF
-                    </div>
-                    <div class="info-card-body">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-md);">
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoMaxFeatures">--</div>
-                                <div class="metric-label">Max Features</div>
+                        <div class="info-card-body">
+                            <div class="info-row">
+                                <span class="info-label">Type</span>
+                                <span class="info-value" id="infoModelType">--</span>
                             </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoNgramRange">--</div>
-                                <div class="metric-label">N-gram Range</div>
+                            <div class="info-row">
+                                <span class="info-label">Estimateurs</span>
+                                <span class="info-value" id="infoEstimators">--</span>
                             </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoMinDf">--</div>
-                                <div class="metric-label">Min DF</div>
+                            <div class="info-row">
+                                <span class="info-label">Max Depth</span>
+                                <span class="info-value" id="infoMaxDepth">--</span>
                             </div>
-                            <div class="metric-item">
-                                <div class="metric-value" id="infoMaxDf">--</div>
-                                <div class="metric-label">Max DF</div>
+                            <div class="info-row">
+                                <span class="info-label">Entraîné le</span>
+                                <span class="info-value" id="infoTrainedAt">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Temps</span>
+                                <span class="info-value" id="infoTrainingTime">--</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Categories List -->
-                <div class="info-card" style="grid-column: 1 / -1;">
-                    <div class="info-card-header">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-                        </svg>
-                        Catégories Supportées (25)
+                    <!-- Data Info -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                            Données
+                        </div>
+                        <div class="info-card-body">
+                            <div class="info-row">
+                                <span class="info-label">Train samples</span>
+                                <span class="info-value" id="infoTrainSamples">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Test samples</span>
+                                <span class="info-value" id="infoTestSamples">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Catégories</span>
+                                <span class="info-value" id="infoCategories">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Features</span>
+                                <span class="info-value" id="infoFeatures">--</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="info-card-body">
-                        <div class="tag-container" id="categoriesList"></div>
+
+                    <!-- Data Augmentation -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 2v20M2 12h20"/>
+                            </svg>
+                            Augmentation
+                        </div>
+                        <div class="info-card-body">
+                            <div class="info-row">
+                                <span class="info-label">Original</span>
+                                <span class="info-value" id="infoOriginalSamples">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Augmenté</span>
+                                <span class="info-value" id="infoAugmentedSamples">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total</span>
+                                <span class="info-value highlight" id="infoFinalSamples">--</span>
+                            </div>
+                            <div class="tag-container" id="augmentationTechniques" style="margin-top: var(--space-md);"></div>
+                        </div>
                     </div>
+
+                    <!-- Duplicate Handling -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Doublons
+                        </div>
+                        <div class="info-card-body">
+                            <div class="info-row">
+                                <span class="info-label">CV uniques</span>
+                                <span class="info-value" id="infoUniqueTexts">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Doublons</span>
+                                <span class="info-value" id="infoDuplicatesFound">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Safe (train)</span>
+                                <span class="info-value" id="infoSafeDuplicates">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Discarded</span>
+                                <span class="info-value" id="infoUnsafeDuplicates">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TF-IDF Configuration -->
+                    <div class="info-card span-2">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 20V10"/>
+                                <path d="M18 20V4"/>
+                                <path d="M6 20v-4"/>
+                            </svg>
+                            Vectorisation TF-IDF
+                        </div>
+                        <div class="info-card-body">
+                            <div class="tfidf-metrics">
+                                <div class="metric-item">
+                                    <div class="metric-value" id="infoMaxFeatures">--</div>
+                                    <div class="metric-label">Max Features</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="infoNgramRange">--</div>
+                                    <div class="metric-label">N-gram Range</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="infoMinDf">--</div>
+                                    <div class="metric-label">Min DF</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="infoMaxDf">--</div>
+                                    <div class="metric-label">Max DF</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Transformations -->
+                    <div class="info-card full-width">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                            Transformations du Texte
+                        </div>
+                        <div class="info-card-body">
+                            <div class="transformations-grid" id="transformationSteps">
+                                <!-- Filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories List -->
+                    <div class="info-card full-width">
+                        <div class="info-card-header">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                            </svg>
+                            25 Catégories Professionnelles
+                        </div>
+                        <div class="info-card-body">
+                            <div class="tag-container" id="categoriesList"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
