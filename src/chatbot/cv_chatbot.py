@@ -123,13 +123,15 @@ Réponds en te basant UNIQUEMENT sur le CV ci-dessus."""
         messages.append({"role": "user", "content": cv_with_question})
 
         try:
-            response = self.client.chat.completions.create(
+            # Utiliser chat_completion (API HuggingFace)
+            response = self.client.chat_completion(
                 model=self.model_id,
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.7,
             )
 
+            # Extraire la réponse
             answer = response.choices[0].message.content.strip()
 
             # Stocker dans l'historique
