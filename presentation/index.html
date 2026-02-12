@@ -424,7 +424,7 @@
         <div class="slide" data-slide="2">
             <div class="slide-header">
                 <h1>Agenda</h1>
-                <span class="slide-number">2 / 15</span>
+                <span class="slide-number">2 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
@@ -455,7 +455,7 @@
         <div class="slide" data-slide="3">
             <div class="slide-header">
                 <h1>1. Introduction</h1>
-                <span class="slide-number">3 / 15</span>
+                <span class="slide-number">3 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
@@ -486,7 +486,7 @@
         <div class="slide" data-slide="4">
             <div class="slide-header">
                 <h1>2. Les Données</h1>
-                <span class="slide-number">4 / 15</span>
+                <span class="slide-number">4 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="stats-row">
@@ -526,7 +526,7 @@
         <div class="slide" data-slide="5">
             <div class="slide-header">
                 <h1>3. Pipeline NLP - Multilingue</h1>
-                <span class="slide-number">5 / 15</span>
+                <span class="slide-number">5 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="pipeline">
@@ -567,7 +567,7 @@
         <div class="slide" data-slide="6">
             <div class="slide-header">
                 <h1>4. Data Augmentation</h1>
-                <span class="slide-number">6 / 15</span>
+                <span class="slide-number">6 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="stats-row">
@@ -610,73 +610,183 @@
             </div>
         </div>
 
-        <!-- Slide 7: Models Comparison -->
+        <!-- Slide 7: TF-IDF Explained -->
         <div class="slide" data-slide="7">
             <div class="slide-header">
-                <h1>5. Comparaison des Approches</h1>
-                <span class="slide-number">7 / 15</span>
+                <h1>5. Approche 1 : TF-IDF</h1>
+                <span class="slide-number">7 / 17</span>
             </div>
             <div class="slide-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Approche</th>
-                            <th>Vectorisation</th>
-                            <th>Accuracy</th>
-                            <th>F1-Score</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Naive Bayes + TF-IDF</td>
-                            <td>7000 features</td>
-                            <td>78.5%</td>
-                            <td>75.2%</td>
-                            <td><span class="badge badge-orange">Baseline</span></td>
-                        </tr>
-                        <tr>
-                            <td>Random Forest + TF-IDF</td>
-                            <td>7000 features</td>
-                            <td>85.3%</td>
-                            <td>80.8%</td>
-                            <td><span class="badge badge-blue">V1</span></td>
-                        </tr>
-                        <tr class="highlight">
-                            <td><strong>Random Forest + Embeddings</strong></td>
-                            <td><strong>384 dims</strong></td>
-                            <td><strong>99.5%</strong></td>
-                            <td><strong>99.7%</strong></td>
-                            <td><span class="badge badge-green">V3 Multilingue</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="card green mt-15">
-                    <p><span class="text-success">Amélioration majeure :</span> Les embeddings Sentence Transformers capturent le sens sémantique, permettant +14% d'accuracy et le support de 50+ langues.</p>
+                <div class="two-col">
+                    <div>
+                        <h3>Comment ça marche ?</h3>
+                        <p class="mb-10">TF-IDF = <strong>Term Frequency × Inverse Document Frequency</strong></p>
+                        <div class="card">
+                            <ul>
+                                <li><strong>TF</strong> : Fréquence du mot dans le document</li>
+                                <li><strong>IDF</strong> : Rareté du mot dans le corpus</li>
+                                <li>Résultat : Vecteur <span class="text-primary">sparse</span> (creux)</li>
+                            </ul>
+                        </div>
+                        <div class="code mt-10" style="font-size: 0.65rem;">
+                            "Python developer" → [0, 0, 0.8, 0, 0.6, 0, ...]<br>
+                            <span class="comment"># 7000 dimensions, mostly zeros</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Résultats avec TF-IDF</h3>
+                        <table style="font-size: 0.75rem;">
+                            <tr><th>Modèle</th><th>Accuracy</th><th>F1</th></tr>
+                            <tr><td>Naive Bayes</td><td>78.5%</td><td>75.2%</td></tr>
+                            <tr><td>Logistic Reg.</td><td>82.1%</td><td>79.8%</td></tr>
+                            <tr><td>SVM</td><td>83.4%</td><td>80.5%</td></tr>
+                            <tr class="highlight"><td><strong>Random Forest</strong></td><td><strong>85.3%</strong></td><td><strong>80.8%</strong></td></tr>
+                            <tr><td>XGBoost</td><td>84.7%</td><td>80.1%</td></tr>
+                        </table>
+                        <div class="card orange mt-10">
+                            <p class="small"><strong>Limite :</strong> Ne capture pas le sens → "développeur" ≠ "programmer" pour TF-IDF</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 8: Best Model -->
+        <!-- Slide 8: Embeddings Explained -->
         <div class="slide" data-slide="8">
             <div class="slide-header">
-                <h1>5. Modèle Final - Multilingue</h1>
-                <span class="slide-number">8 / 15</span>
+                <h1>5. Approche 2 : Embeddings</h1>
+                <span class="slide-number">8 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
+                    <div>
+                        <h3>Comment ça marche ?</h3>
+                        <p class="mb-10">Un réseau de neurones <strong>pré-entraîné</strong> transforme le texte en vecteur dense.</p>
+                        <div class="card green">
+                            <ul>
+                                <li><strong>Sentence Transformers</strong> : Modèle BERT optimisé</li>
+                                <li>Capture le <span class="text-success">sens sémantique</span></li>
+                                <li>Vecteur <span class="text-primary">dense</span> : 384 dimensions</li>
+                                <li>Multilingue : 50+ langues</li>
+                            </ul>
+                        </div>
+                        <div class="code mt-10" style="font-size: 0.65rem;">
+                            "Python developer" → [0.23, -0.45, 0.12, ...]<br>
+                            "Développeur Python" → [0.22, -0.44, 0.13, ...]<br>
+                            <span class="comment"># Vecteurs similaires = même sens!</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Processus d'embedding</h3>
+                        <div class="pipeline" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="pipe-step">Texte CV</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-step active">Tokenization</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-left: 20px;">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-step active">BERT Encoder</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-step active">Pooling</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-left: 40px;">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-step">Vecteur 384D</div>
+                            </div>
+                        </div>
+                        <div class="card mt-10">
+                            <p class="small"><strong>Modèle :</strong> paraphrase-multilingual-MiniLM-L12-v2</p>
+                            <p class="small">Entraîné sur 1B+ paires de phrases en 50+ langues</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Comparison TF-IDF vs Embeddings -->
+        <div class="slide" data-slide="9">
+            <div class="slide-header">
+                <h1>5. TF-IDF vs Embeddings</h1>
+                <span class="slide-number">9 / 17</span>
+            </div>
+            <div class="slide-body">
+                <table style="font-size: 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>TF-IDF</th>
+                            <th>Embeddings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Type de vecteur</strong></td>
+                            <td>Sparse (creux)</td>
+                            <td class="text-success">Dense</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dimensions</strong></td>
+                            <td>7000</td>
+                            <td class="text-success">384</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sens sémantique</strong></td>
+                            <td class="text-danger">Non</td>
+                            <td class="text-success">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multilingue</strong></td>
+                            <td class="text-danger">Non</td>
+                            <td class="text-success">50+ langues</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Accuracy (Test)</strong></td>
+                            <td>85.3%</td>
+                            <td class="text-success"><strong>99.5%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>F1-Score (Test)</strong></td>
+                            <td>80.8%</td>
+                            <td class="text-success"><strong>99.7%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="card green mt-10">
+                    <p><span class="text-success">Gain :</span> <strong>+14.2%</strong> accuracy | <strong>+18.9%</strong> F1-Score | Support multilingue natif</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Final Model -->
+        <div class="slide" data-slide="10">
+            <div class="slide-header">
+                <h1>5. Modèle Final Retenu</h1>
+                <span class="slide-number">10 / 17</span>
+            </div>
+            <div class="slide-body">
+                <div class="pipeline">
+                    <div class="pipe-step">CV Texte</div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step active">Sentence Transformer</div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step active">384D Vector</div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step active">Random Forest</div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step">Catégorie</div>
+                </div>
+                <div class="two-col mt-15">
                     <div class="card">
                         <h3>Architecture</h3>
                         <ul>
                             <li>Embedder : <span class="text-primary">MiniLM-L12-v2</span></li>
-                            <li>Classifieur : Random Forest</li>
-                            <li>n_estimators : <span class="text-primary">200</span></li>
-                            <li>max_depth : <span class="text-primary">20</span></li>
-                            <li>Langues : <span class="text-primary">50+</span></li>
+                            <li>Classifieur : Random Forest (200 arbres)</li>
+                            <li>Langues : <span class="text-primary">50+</span> (FR, EN, ES, DE...)</li>
                         </ul>
                     </div>
                     <div class="card green">
-                        <h3>Performances Test Set (193 samples)</h3>
+                        <h3>Performances Test Set</h3>
                         <div class="metrics" style="grid-template-columns: 1fr 1fr;">
                             <div class="metric">
                                 <div class="value">99.5%</div>
@@ -686,28 +796,17 @@
                                 <div class="value">99.7%</div>
                                 <div class="label">F1-Score</div>
                             </div>
-                            <div class="metric">
-                                <div class="value">97.4%</div>
-                                <div class="label">CV F1 (5-fold)</div>
-                            </div>
-                            <div class="metric">
-                                <div class="value">384</div>
-                                <div class="label">Dimensions</div>
-                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card mt-10" style="border-left-color: var(--primary);">
-                    <p><span class="text-primary">Split correct :</span> Données séparées AVANT vectorisation → pas de fuite de données</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 9: Chatbot avec In-Context Learning -->
-        <div class="slide" data-slide="9">
+        <!-- Slide 11: Chatbot avec In-Context Learning -->
+        <div class="slide" data-slide="11">
             <div class="slide-header">
                 <h1>6. Chatbot IA - In-Context Learning</h1>
-                <span class="slide-number">9 / 15</span>
+                <span class="slide-number">11 / 17</span>
             </div>
             <div class="slide-body">
                 <p class="mb-10">Le chatbot utilise l'<strong class="text-primary">In-Context Learning</strong> : le LLM apprend à analyser le CV directement via le prompt, sans fine-tuning.</p>
@@ -743,11 +842,11 @@
             </div>
         </div>
 
-        <!-- Slide 10: API -->
-        <div class="slide" data-slide="10">
+        <!-- Slide 12: API -->
+        <div class="slide" data-slide="12">
             <div class="slide-header">
                 <h1>7. API REST - FastAPI</h1>
-                <span class="slide-number">10 / 15</span>
+                <span class="slide-number">12 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
@@ -777,11 +876,11 @@
             </div>
         </div>
 
-        <!-- Slide 11: Interface -->
-        <div class="slide" data-slide="11">
+        <!-- Slide 13: Interface -->
+        <div class="slide" data-slide="13">
             <div class="slide-header">
                 <h1>7. Interface Web</h1>
-                <span class="slide-number">11 / 15</span>
+                <span class="slide-number">13 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
@@ -816,11 +915,11 @@
             </div>
         </div>
 
-        <!-- Slide 12: Deployment -->
-        <div class="slide" data-slide="12">
+        <!-- Slide 14: Deployment -->
+        <div class="slide" data-slide="14">
             <div class="slide-header">
                 <h1>8. Déploiement CI/CD</h1>
-                <span class="slide-number">12 / 15</span>
+                <span class="slide-number">14 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="pipeline">
@@ -857,11 +956,11 @@
             </div>
         </div>
 
-        <!-- Slide 13: Demo -->
-        <div class="slide" data-slide="13">
+        <!-- Slide 15: Demo -->
+        <div class="slide" data-slide="15">
             <div class="slide-header">
                 <h1>9. Démonstration</h1>
-                <span class="slide-number">13 / 15</span>
+                <span class="slide-number">15 / 17</span>
             </div>
             <div class="slide-body center">
                 <div class="big-icon">🎬</div>
@@ -875,11 +974,11 @@
             </div>
         </div>
 
-        <!-- Slide 14: Conclusion -->
-        <div class="slide" data-slide="14">
+        <!-- Slide 16: Conclusion -->
+        <div class="slide" data-slide="16">
             <div class="slide-header">
                 <h1>10. Conclusion</h1>
-                <span class="slide-number">14 / 15</span>
+                <span class="slide-number">16 / 17</span>
             </div>
             <div class="slide-body">
                 <div class="two-col">
@@ -909,7 +1008,7 @@
         </div>
 
         <!-- Slide 15: Questions -->
-        <div class="slide slide-title" data-slide="15">
+        <div class="slide slide-title" data-slide="17">
             <h1>Questions ?</h1>
             <p class="subtitle">Merci de votre attention</p>
             <div class="meta" style="margin-top: 2rem;">
@@ -922,7 +1021,7 @@
     <!-- Navigation -->
     <div class="nav-bar">
         <div class="nav-info">
-            <span id="slideCounter">Slide 1 / 15</span>
+            <span id="slideCounter">Slide 1 / 17</span>
             <span style="margin-left: 15px; opacity: 0.6;">← → pour naviguer</span>
         </div>
         <div class="nav-buttons">
@@ -933,7 +1032,7 @@
 
     <script>
         let currentSlide = 1;
-        const totalSlides = 15;
+        const totalSlides = 17;
 
         function showSlide(n) {
             if (n < 1) n = 1;
