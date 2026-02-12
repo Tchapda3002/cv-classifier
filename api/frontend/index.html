@@ -725,6 +725,20 @@
             display: block;
         }
 
+        /* Model Info tab takes full width */
+        #tab-model-info {
+            grid-column: 1 / -1;
+        }
+
+        #tab-model-info.active {
+            display: block;
+        }
+
+        /* Classifier tab uses grid display */
+        #tab-classifier.active {
+            display: contents;
+        }
+
         /* Model Info Tab Styles - Professional Dashboard */
         .model-info-container {
             grid-column: 1 / -1;
