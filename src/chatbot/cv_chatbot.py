@@ -22,12 +22,11 @@ class CVChatbot:
     """
 
     # Models disponibles (compatibles chat sur HF Inference)
-    # Note: Utiliser des modèles non-gated pour éviter les problèmes d'accès
     AVAILABLE_MODELS = {
-        "mistral": "mistralai/Mistral-7B-Instruct-v0.3",  # Gratuit, pas de gate
-        "qwen": "Qwen/Qwen2.5-1.5B-Instruct",             # Gratuit, pas de gate
-        "phi": "microsoft/Phi-3-mini-4k-instruct",        # Gratuit, pas de gate
-        "llama": "mistralai/Mistral-7B-Instruct-v0.3",    # Fallback vers Mistral
+        "llama": "meta-llama/Llama-3.2-3B-Instruct",
+        "qwen": "Qwen/Qwen2.5-1.5B-Instruct",
+        "phi": "microsoft/Phi-3-mini-4k-instruct",
+        "mistral": "mistralai/Mistral-7B-Instruct-v0.3",
     }
 
     def __init__(
@@ -92,31 +91,36 @@ class CVChatbot:
                 "error": "Client HuggingFace non initialisé. Vérifiez votre token."
             }
 
-        # Construire les messages pour le chat
-        system_prompt = """Tu es un assistant spécialisé dans l'analyse de CV.
-Tu dois répondre aux questions de l'utilisateur en te basant UNIQUEMENT sur le CV fourni.
-Sois concis et précis. Si l'information n'est pas dans le CV, dis-le clairement.
-Réponds en français."""
+        # Construire le prompt avec le CV intégré directement
+        # In-Context Learning: Le CV est fourni comme contexte dans chaque requête
 
-        cv_section = f"""Voici le CV à analyser:
+        system_prompt = """Tu es un assistant expert en analyse de CV.
+RÈGLES STRICTES:
+1. Tu DOIS te baser UNIQUEMENT sur le contenu du CV fourni ci-dessous
+2. Si une information n'est PAS dans le CV, dis clairement "Cette information n'est pas mentionnée dans le CV"
+3. Réponds toujours en français
+4. Sois concis et précis"""
 
-{self.cv_context[:3000]}
+        # Intégrer le CV directement dans le premier message utilisateur
+        cv_with_question = f"""### CV À ANALYSER ###
+{self.cv_context[:4000]}
+### FIN DU CV ###
 
----
-Réponds maintenant à la question de l'utilisateur."""
+Question: {question}
+
+Réponds en te basant UNIQUEMENT sur le CV ci-dessus."""
 
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": cv_section},
         ]
 
-        # Ajouter l'historique (derniers 3 échanges)
-        for exchange in self.conversation_history[-3:]:
-            messages.append({"role": "user", "content": exchange['question']})
+        # Ajouter l'historique (derniers 2 échanges pour garder de la place)
+        for exchange in self.conversation_history[-2:]:
+            messages.append({"role": "user", "content": f"Question: {exchange['question']}"})
             messages.append({"role": "assistant", "content": exchange['answer']})
 
-        # Ajouter la question actuelle
-        messages.append({"role": "user", "content": question})
+        # Ajouter la question actuelle avec le CV
+        messages.append({"role": "user", "content": cv_with_question})
 
         try:
             response = self.client.chat.completions.create(
