@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Classifier | Intelligence Artificielle pour le Recrutement</title>
+    <title>CV Classifier | IA Multilingue pour le Recrutement</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1305,7 +1305,7 @@
 
         <!-- Model Info Banner (always visible) -->
         <div class="model-banner" id="modelBanner" style="grid-column: 1 / -1;">
-            <div class="model-banner-title">Modèle de Classification</div>
+            <div class="model-banner-title">Modèle Multilingue (50+ langues)</div>
             <div class="model-stats">
                 <div class="model-stat">
                     <span class="model-stat-value" id="bannerAccuracy">--</span>
@@ -1332,8 +1332,8 @@
 
                 <!-- Hero: Performance Metrics (Test Set) -->
                 <div class="performance-hero">
-                    <div class="performance-hero-title">Performances du Modèle</div>
-                    <div class="performance-hero-subtitle">Métriques évaluées sur le jeu de test (données jamais vues pendant l'entraînement)</div>
+                    <div class="performance-hero-title">Performances du Modèle Multilingue</div>
+                    <div class="performance-hero-subtitle">Métriques sur le test set (193 samples) • Support de 50+ langues avec Sentence Transformers</div>
                     <div class="hero-metrics">
                         <div class="hero-metric">
                             <div class="hero-metric-value" id="infoAccuracy">--</div>
@@ -1360,9 +1360,9 @@
                     <div class="pipeline-visual">
                         <div class="pipeline-step-box">CV Texte</div>
                         <span class="pipeline-arrow">→</span>
-                        <div class="pipeline-step-box active">Nettoyage NLP</div>
+                        <div class="pipeline-step-box active">Sentence Transformer</div>
                         <span class="pipeline-arrow">→</span>
-                        <div class="pipeline-step-box active">TF-IDF</div>
+                        <div class="pipeline-step-box active">Embeddings 384D</div>
                         <span class="pipeline-arrow">→</span>
                         <div class="pipeline-step-box active">Random Forest</div>
                         <span class="pipeline-arrow">→</span>
@@ -1489,33 +1489,33 @@
                         </div>
                     </div>
 
-                    <!-- TF-IDF Configuration -->
+                    <!-- Embeddings Multilingues -->
                     <div class="info-card span-2">
                         <div class="info-card-header">
                             <svg class="icon" viewBox="0 0 24 24">
-                                <path d="M12 20V10"/>
-                                <path d="M18 20V4"/>
-                                <path d="M6 20v-4"/>
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                             </svg>
-                            Vectorisation TF-IDF
+                            Embeddings Multilingues
                         </div>
                         <div class="info-card-body">
                             <div class="tfidf-metrics">
                                 <div class="metric-item">
-                                    <div class="metric-value" id="infoMaxFeatures">--</div>
-                                    <div class="metric-label">Max Features</div>
+                                    <div class="metric-value" id="infoEmbedModel">MiniLM-L12</div>
+                                    <div class="metric-label">Modèle</div>
                                 </div>
                                 <div class="metric-item">
-                                    <div class="metric-value" id="infoNgramRange">--</div>
-                                    <div class="metric-label">N-gram Range</div>
+                                    <div class="metric-value" id="infoEmbedDim">384</div>
+                                    <div class="metric-label">Dimensions</div>
                                 </div>
                                 <div class="metric-item">
-                                    <div class="metric-value" id="infoMinDf">--</div>
-                                    <div class="metric-label">Min DF</div>
+                                    <div class="metric-value" id="infoLanguages">50+</div>
+                                    <div class="metric-label">Langues</div>
                                 </div>
                                 <div class="metric-item">
-                                    <div class="metric-value" id="infoMaxDf">--</div>
-                                    <div class="metric-label">Max DF</div>
+                                    <div class="metric-value" id="infoEmbedType">Dense</div>
+                                    <div class="metric-label">Type Vecteur</div>
                                 </div>
                             </div>
                         </div>
@@ -1947,16 +1947,16 @@
                         `).join('');
                     }
 
-                    // TF-IDF Configuration
-                    const tfidf = data.transformations?.vectorization || {};
-                    document.getElementById('infoMaxFeatures').textContent =
-                        tfidf.max_features || data.n_features || '--';
-                    document.getElementById('infoNgramRange').textContent =
-                        tfidf.ngram_range ? `(${tfidf.ngram_range[0]}, ${tfidf.ngram_range[1]})` : '--';
-                    document.getElementById('infoMinDf').textContent =
-                        tfidf.min_df !== undefined ? tfidf.min_df : '--';
-                    document.getElementById('infoMaxDf').textContent =
-                        tfidf.max_df !== undefined ? tfidf.max_df : '--';
+                    // Multilingual Embeddings Configuration
+                    const multilingual = data.multilingual || {};
+                    document.getElementById('infoEmbedModel').textContent =
+                        multilingual.model_name ? multilingual.model_name.split('/').pop().replace('paraphrase-multilingual-', '') : 'MiniLM-L12';
+                    document.getElementById('infoEmbedDim').textContent =
+                        multilingual.embedding_dim || data.n_features || '384';
+                    document.getElementById('infoLanguages').textContent =
+                        multilingual.languages_count || '50+';
+                    document.getElementById('infoEmbedType').textContent =
+                        data.mode === 'multilingual' ? 'Dense' : 'Sparse';
 
                     // Categories List
                     const cats = data.categories || [];

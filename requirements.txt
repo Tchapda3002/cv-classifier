@@ -10,6 +10,7 @@ pandas
 
 # NLP et Text Processing
 nltk
+sentence-transformers
 
 # Extraction PDF
 pdfplumber==0.11.9
