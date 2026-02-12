@@ -22,11 +22,12 @@ class CVChatbot:
     """
 
     # Models disponibles (compatibles chat sur HF Inference)
+    # Note: Utiliser des modèles non-gated pour éviter les problèmes d'accès
     AVAILABLE_MODELS = {
-        "llama": "meta-llama/Llama-3.2-3B-Instruct",
-        "qwen": "Qwen/Qwen2.5-1.5B-Instruct",
-        "phi": "microsoft/Phi-3-mini-4k-instruct",
-        "mistral": "meta-llama/Llama-3.2-3B-Instruct",  # Fallback vers Llama
+        "mistral": "mistralai/Mistral-7B-Instruct-v0.3",  # Gratuit, pas de gate
+        "qwen": "Qwen/Qwen2.5-1.5B-Instruct",             # Gratuit, pas de gate
+        "phi": "microsoft/Phi-3-mini-4k-instruct",        # Gratuit, pas de gate
+        "llama": "mistralai/Mistral-7B-Instruct-v0.3",    # Fallback vers Mistral
     }
 
     def __init__(
